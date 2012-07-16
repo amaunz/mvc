@@ -1,0 +1,11 @@
+Package: mvc
+Title: Multi-View Clustering
+Description: An implementation of Multi-View Clustering (Bickel and Scheffer, 2004). Documents currently only support words drawn without replacement, i.e. the process of word selection is binary. Thus, it implements Mixture of Binomials EM (as opposed to the more general Mixture of Multinomials EM developed in the paper), and Spherical k-Means. 
+URL: http://cs.maunz.de
+Version: 1.0
+Maintainer: Andreas Maunz <andreas@maunz.de>
+Author: Andreas Maunz <andreas@maunz.de>
+Depends: R (>= 2.14.1), rattle (>= 2.6.18)
+Suggests: 
+Imports: 
+License: BSD
