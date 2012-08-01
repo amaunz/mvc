@@ -254,7 +254,12 @@ mvcmb <- function(
       stop("startView argument wrong")
     }
   }
-  checkViews(view1, view2)
+  checkViews(startView, otherView)
+  uniqueVals <- viewsClasses(startView, otherView)
+  if (doDebug) {
+    cat("\nUnique values per view:\n")
+    print(uniqueVals)
+  }
 
 
   # # # Start MVCmb # # #
@@ -265,15 +270,16 @@ mvcmb <- function(
   # Word Probabilities
   nWordsSV = NCOL(startView)
   nWordsOV = NCOL(otherView)
-  PwSV = log(matrix( runif(k*nWordsSV, min=0, max=1), k, nWordsSV, byrow=T )) # random init
-  PwOV = log(matrix( runif(k*nWordsOV, min=0, max=1), k, nWordsOV, byrow=T ))
+  nClassesSV = length(uniqueVals$view1)
+  nClassesOV = length(uniqueVals$view2)
+  if (sum(uniqueVals$view1 != c(1:nClassesSV))) stop(paste("Start view classes must be in 1 ...",nClassesSV))
+  if (sum(uniqueVals$view2 != c(1:nClassesOV))) stop(paste("Other view classes must be in 1 ...",nClassesOV))
+  PwSV = log( array( rep( rep(1,k*nWordsSV)/nClassesSV, nClassesSV), c(k,nWordsSV,nClassesSV) ) )  # uniform init
+  PwOV = log( array( rep( rep(1,k*nWordsOV)/nClassesOV, nClassesOV), c(k,nWordsOV,nClassesOV) ) ) 
   if (doDebug) {
     cat("\nStart view Word Probabilities (by cluster):\n")
     print(exp(PwSV))
-    cat("\nRow Margins:\n")
-    print(rowSums(PwSV))
   }
-
 
   # Prior Probabilities
   alphaSV = log(rep( 1/k, k ))
@@ -284,7 +290,7 @@ mvcmb <- function(
   # j-th row: document probs for cluster j
   Px = matrix ( rep(0, k*m), k, m, byrow=T ) 
   for (j in 1:k) {
-    Px[j,] = estLogPxGthetaJ( startView, PwSV[j,] )
+    Px[j,] = estLogPxCatGthetaJ( startView, PwSV[j,,] )
   }
   if (doDebug) {
     cat("\nStart view Document Probabilities (by cluster):\n")
@@ -335,17 +341,25 @@ mvcmb <- function(
     if (doOutput) cat(paste("\nM-Step:",itCount,"\n"))
 
     # word probabilities
-    for (j in 1:k) {
-      ViewClusterWgt = views$CV * exp(Pj$HV[,j])  # view weighted by cluster (document-wise)
-      Pw$CV[j,] = as.vector(colSums(ViewClusterWgt))    # words weighted by cluster (sum across documents)
+    for (c in 1:dim(Pw$CV)[3]) {
+      binInd = views$CV==c
+      for (j in 1:k) {
+        ViewClusterWgt = binInd * exp(Pj$HV[,j])  # view weighted by cluster (document-wise)
+        Pw$CV[j,,c] = as.vector(colSums(ViewClusterWgt))    # words weighted by cluster (sum across documents)
+      }
     }
-    Pw$CV = log(Pw$CV / rowSums(Pw$CV))
-    Pw$CV[is.nan(Pw$CV)] = 0
+    for (j in 1:k) {
+      Pw$CV[j,,] = log(Pw$CV[j,,] / rowSums(Pw$CV[j,,]))
+      Pw$CV[is.nan(Pw$CV)] = 0
+    }
+
     if (doDebug) {
       cat("\nWord Probabilities (by cluster):\n")
-      print(exp(Pw$CV))
-      cat("\nRow Margins:\n")
-      print(exp(apply( Pw$CV, 1, function(logx) logsum(logx))))
+      for (j in 1:k) {
+        print(exp(Pw$CV[j,,]))
+        cat("\nRow Margins:\n")
+        print(exp(apply( Pw$CV[j,,], 1, function(logx) logsum(logx))))
+      }
       #Sys.sleep(2)
     }
 
@@ -361,7 +375,7 @@ mvcmb <- function(
     # E-Step: Likelihood
     if (doOutput) cat(paste("\nE-Step:",itCount,"\n"))
     for (j in 1:k) {
-      Px$CV[j,] = estLogPxGthetaJ( views$CV, Pw$CV[j,] )
+      Px$CV[j,] = estLogPxCatGthetaJ( views$CV, Pw$CV[j,,] )
     }
     
     if (doDebug) {
