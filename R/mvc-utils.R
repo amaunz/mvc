@@ -271,7 +271,9 @@ dbern <- function(x,prob) {
 #' @param x a categorical event vector
 #' @param prob the categorical probability matrix (rows along events, cols along event values)
 #' @return categorical likelihood
-#' @example dcat(c(1,2,1),matrix(c(.9,.8,.9,.1,.2,.1),3,2))
+#' @examples {
+#'   dcat(c(1,2,1),matrix(c(.9,.8,.9,.1,.2,.1),3,2))
+#' }
 
 dcat <- function(x,prob) {
     sapply(seq_along(x), function(idx) prob[idx,x[idx]])

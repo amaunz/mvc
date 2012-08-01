@@ -9,4 +9,4 @@ Depends: R (>= 2.14.1), rattle (>= 2.6.18)
 Suggests:
 Imports:
 License: BSD
-Packaged: 2012-08-01 13:57:59 UTC; am
+Packaged: 2012-08-01 14:44:48 UTC; am
