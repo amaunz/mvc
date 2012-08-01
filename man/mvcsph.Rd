@@ -1,14 +1,14 @@
 \name{mvcsph}
 \alias{mvcsph}
-\title{Multi-View Clustering using Spherical k-Means, restricted to binary data.}
+\title{Multi-View Clustering using Spherical k-Means for categorical data.}
 \usage{mvcsph(view1, view2, k=Inf, startView="view1", nthresh=20, doOutput=F,
     doDebug=F, plotFile="Rplots.pdf")}
-\description{Multi-View Clustering using Spherical k-Means, restricted to binary data.
+\description{Multi-View Clustering using Spherical k-Means for categorical data.
 See: S. Bickel, T. Scheffer: Multi-View Clustering, ICDM 04.
-Hierachical clustering is performed once to determine the initial centers for k-Means}
+Hierachical clustering used to determine the initial centers for k-Means}
 \value{A list reporting the final clustering, with names finalIndices, agreementRate, indicesSv, indicesOv. They designate final cluster indices as a vector, as well as agreement rate of the two views, and the individual indices given by the two views over the course of iterations as data frames.}
-\arguments{\item{view1}{View number one, a data frame with the same row names as view2.}
-\item{view2}{View number two, a data frame with the same row names as view1.}
+\arguments{\item{view1}{View number one, a data frame with the same row names as view2. All columns numeric. Entries are natural numbers, starting from 1.}
+\item{view2}{View number two, a data frame with the same row names as view1. All columns numeric. Entries are natural numbers, starting from 1.}
 \item{k}{The maximum number of clusters to create}
 \item{startView}{The view on which to perform the initial E step, one of "view1", "view2"}
 \item{nthresh}{The number of iterations to run without improvement of the objective function}
