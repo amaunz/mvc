@@ -4,8 +4,8 @@ Implementation of: S Bickel and T Scheffer: *Multi-View Clustering*, Proceedings
 
 ## Contents ##
 
-  - Multi-View Clustering using Spherical k-Means, restricted to binary data.
-  - Multi-View Clustering using mixture of binomials EM, restricted to binary data.
+  - Multi-View Clustering using Spherical k-Means for categorical data.
+  - Multi-View Clustering using mixture of categoricals EM.
 
 ## Stable Version: Installation from CRAN ##
 
@@ -38,7 +38,7 @@ Multi-View Clustering using Spherical k-Means:
     )
     print(results$finalIndices)
 
-Multi-View Clustering using mixture of binomials EM:
+Multi-View Clustering using mixture of categoricals EM:
 
     library(mvc)
     data(toyViews)

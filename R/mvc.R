@@ -1,12 +1,12 @@
 source("R/mvc-utils.R")
 
 
-#' Multi-View Clustering using Spherical k-Means, restricted to binary data.
+#' Multi-View Clustering using Spherical k-Means for categorical data.
 #' See: S. Bickel, T. Scheffer: Multi-View Clustering, ICDM 04.
-#' Hierachical clustering is performed once to determine the initial centers for k-Means
+#' Hierachical clustering used to determine the initial centers for k-Means
 #'
-#' @param view1 View number one, a data frame with the same row names as view2.
-#' @param view2 View number two, a data frame with the same row names as view1.
+#' @param view1 View number one, a data frame with the same row names as view2. All columns numeric. Entries are natural numbers, starting from 1.
+#' @param view2 View number two, a data frame with the same row names as view1. All columns numeric. Entries are natural numbers, starting from 1.
 #' @param k The maximum number of clusters to create
 #' @param startView The view on which to perform the initial E step, one of "view1", "view2"
 #' @param nthresh The number of iterations to run without improvement of the objective function
@@ -63,7 +63,16 @@ mvcsph <- function(
       stop("startView argument wrong")
     }
   }
-  checkViews(view1, view2)
+  checkViews(startView, otherView)
+  uniqueVals <- viewsClasses(startView, otherView)
+  if (doDebug) {
+    cat("\nUnique values per view:\n")
+    print(uniqueVals)
+  }
+  nClassesSV = length(uniqueVals$view1)
+  nClassesOV = length(uniqueVals$view2)
+  if (sum(uniqueVals$view1 != c(1:nClassesSV))) stop(paste("Start view classes must be in 1 ...",nClassesSV))
+  if (sum(uniqueVals$view2 != c(1:nClassesOV))) stop(paste("Other view classes must be in 1 ...",nClassesOV))
 
     
   # # # Start MVCSph # # #
@@ -195,11 +204,11 @@ mvcsph <- function(
 }
 
 
-#' Multi-View Clustering using mixture of binomials EM, restricted to binary data.
+#' Multi-View Clustering using mixture of categoricals EM.
 #' See: S. Bickel, T. Scheffer: Multi-View Clustering, ICDM 04.
 #'
-#' @param view1 View number one, a data frame with the same row names as view2
-#' @param view2 View number two, a data frame with the same row names as view1
+#' @param view1 View number one, a data frame with the same row names as view2. All columns numeric. Entries are natural numbers, starting from 1.
+#' @param view2 View number two, a data frame with the same row names as view1. All columns numeric. Entries are natural numbers, starting from 1.
 #' @param k The maximum number of clusters to create
 #' @param startView String designating the view on which to perform the initial E step, one of "view1", "view2"
 #' @param nthresh The number of iterations to run without improvement of the objective function
@@ -260,6 +269,10 @@ mvcmb <- function(
     cat("\nUnique values per view:\n")
     print(uniqueVals)
   }
+  nClassesSV = length(uniqueVals$view1)
+  nClassesOV = length(uniqueVals$view2)
+  if (sum(uniqueVals$view1 != c(1:nClassesSV))) stop(paste("Start view classes must be in 1 ...",nClassesSV))
+  if (sum(uniqueVals$view2 != c(1:nClassesOV))) stop(paste("Other view classes must be in 1 ...",nClassesOV))
 
 
   # # # Start MVCmb # # #
@@ -270,12 +283,8 @@ mvcmb <- function(
   # Word Probabilities
   nWordsSV = NCOL(startView)
   nWordsOV = NCOL(otherView)
-  nClassesSV = length(uniqueVals$view1)
-  nClassesOV = length(uniqueVals$view2)
-  if (sum(uniqueVals$view1 != c(1:nClassesSV))) stop(paste("Start view classes must be in 1 ...",nClassesSV))
-  if (sum(uniqueVals$view2 != c(1:nClassesOV))) stop(paste("Other view classes must be in 1 ...",nClassesOV))
-  PwSV = log( array( rep( rep(1,k*nWordsSV)/nClassesSV, nClassesSV), c(k,nWordsSV,nClassesSV) ) )  # uniform init
-  PwOV = log( array( rep( rep(1,k*nWordsOV)/nClassesOV, nClassesOV), c(k,nWordsOV,nClassesOV) ) ) 
+  PwSV = log( array( runif(k*nWordsSV*nClassesSV, min=0, max=1), c(k,nWordsSV,nClassesSV) ) ) # random init
+  PwOV = log( array( runif(k*nWordsOV*nClassesOV, min=0, max=1), c(k,nWordsOV,nClassesOV) ) )
   if (doDebug) {
     cat("\nStart view Word Probabilities (by cluster):\n")
     print(exp(PwSV))

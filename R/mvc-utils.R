@@ -255,7 +255,7 @@ assignFinIdxPerClSkm <- function(view1,view2,mPerClV) {
 
 
 
-# # # Mixture of Binomials EM # # #
+# # # Mixture of Categoricals EM # # #
 
 
 #' Calculate Bernoulli likelihood
@@ -274,9 +274,6 @@ dbern <- function(x,prob) {
 #' @example dcat(c(1,2,1),matrix(c(.9,.8,.9,.1,.2,.1),3,2))
 
 dcat <- function(x,prob) {
-    print(x)
-    print(prob)
-    print("")
     sapply(seq_along(x), function(idx) prob[idx,x[idx]])
 }
 
@@ -310,7 +307,7 @@ mApplyCat <- function(X,prob) {
 #'   prob=c(.1,.2,.1,.1) # prob per index
 #'   dput(mApplyBern(X,prob)) # likelihood for each index
 #'   #structure(c(0.9, 0.9, 0.2, 0.8, 0.9, 0.1, 0.9, 0.9), .Dim = c(2L, 4L))
-#'   dput(estLogPxGthetaJ(X,log(prob))) 
+#'   dput(estLogPxBernGthetaJ(X,log(prob))) 
 #'   # c(-1.92551945940758, -2.73644967562391)
 #' }
 
@@ -321,12 +318,24 @@ estLogPxBernGthetaJ <- function (X, logprob) {
 }
 
 
+#' Estimate log document probabilites given specific Categorical parameters
+#' @param X a matrix of categorical events (row-wise)
+#' @param logprob the Categorical probability
+#' 
+#' @examples {
+#'   X=matrix(c(1,2,1,1,1,1,2,1),2,4,byrow=TRUE) # two documents of length 4
+#'   prob=matrix(c(.9,.8,.9,.9,.1,.2,.1,.1),4,2) # prob per index
+#'   dput(mApplyCat(X,prob)) # likelihood for each index
+#'   #structure(c(0.9, 0.9, 0.2, 0.8, 0.9, 0.1, 0.9, 0.9), .Dim = c(2L, 4L))
+#'   dput(estLogPxCatGthetaJ(X,log(prob))) 
+#'   # c(-1.92551945940758, -2.73644967562391)
+#' }
+
 estLogPxCatGthetaJ <- function (X, logprob) {
-  # prob is a vector of size #words
+  # prob is a matrix of size #words x #classes
   # X is a matrix (nrow=n, ncol=#words)
   apply(mApplyCat(X,exp(logprob)), 1, function(x) cumsum(log(x))[length(x)] )
 }
-
 
 
 #' Computes the cumulative sum in terms of logarithmic in- and output
@@ -349,7 +358,6 @@ logsum <- function(logx) {
   }
   mypi + log(mysum)
 }
-
 
 
 #' objective function for mixture of binomials EM: 
