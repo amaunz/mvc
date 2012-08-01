@@ -259,8 +259,8 @@ assignFinIdxPerClSkm <- function(view1,view2,mPerClV) {
 
 
 #' Calculate Bernoulli likelihood
-#' @param x a binary event
-#' @param prob the Bernoulli probability
+#' @param x a binary event (vector)
+#' @param prob the Bernoulli probability (vector)
 #' @return Bernoulli likelihood
 
 dbern <- function(x,prob) {
@@ -269,7 +269,7 @@ dbern <- function(x,prob) {
 
 #' Calculate categorical likelihood
 #' @param x a categorical event vector
-#' @param prob the categorical probability matrix (rows events, cols event values)
+#' @param prob the categorical probability matrix (rows along events, cols along event values)
 #' @return categorical likelihood
 #' @example dcat(c(1,2,1),matrix(c(.9,.8,.9,.1,.2,.1),3,2))
 
@@ -280,7 +280,7 @@ dcat <- function(x,prob) {
 
 #' Calculate Bernoulli likelihood row-wise for binary events
 #' @param X a matrix of binary events (row-wise)
-#' @param prob the Bernoulli probability (a single number)
+#' @param prob the Bernoulli probability vector (along events)
 #' @return a matrix of Bernoulli likelihoods
 
 mApplyBern <- function(X,prob) {
@@ -290,7 +290,7 @@ mApplyBern <- function(X,prob) {
 
 #' Calculate categorical likelihood row-wise for categorical events
 #' @param X a matrix of categorical events (row-wise)
-#' @param prob the categorical probability vector
+#' @param prob the categorical probability matrix (rows along events, cols along event values)
 #' @return a matrix of categorical likelihoods
 
 mApplyCat <- function(X,prob) {
