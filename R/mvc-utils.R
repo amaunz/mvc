@@ -33,8 +33,8 @@ viewsClasses <- function(view1, view2) {
   if (sum(apply(view2,2,is.numeric)) < nrColsView2) {
     stop("view2 contains non-numeric columns")
   }
-  uniqueValsView1 <- sort(unique(unlist(apply(view1,2,unique),use.names=F)))
-  uniqueValsView2 <- sort(unique(unlist(apply(view2,2,unique),use.names=F)))
+  uniqueValsView1 <- sort(unique( unlist(as.list (apply(view1,2,unique),use.names=F) ) ))
+  uniqueValsView2 <- sort(unique( unlist(as.list (apply(view2,2,unique),use.names=F) ) ))
   list(view1=uniqueValsView1, view2=uniqueValsView2)
 }
 
