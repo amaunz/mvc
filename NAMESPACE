@@ -22,3 +22,5 @@ export(
   vectorLength ,
   viewsClasses 
 )
+
+import(rattle) 

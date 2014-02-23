@@ -8,5 +8,5 @@ Author: Andreas Maunz <andreas@maunz.de>
 Depends: R (>= 2.14.1), rattle (>= 2.6.18)
 Suggests:
 Imports:
-License: BSD_3_clause
+License: BSD_3_clause + file LICENSE
 Packaged: 2012-08-03 08:39:35 UTC; am
